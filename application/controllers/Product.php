@@ -9,7 +9,7 @@ class  Product extends CI_Controller {
         $this->load->model('General_model');
         $this->load->model('Genral_datatable');
         $this->load->database();
-        $this->General_model->auth_master();
+        $this->General_model->auth_admin();
     }
 	public function index()
 	{
@@ -28,9 +28,6 @@ class  Product extends CI_Controller {
 		$this->General_model->auth_check();
 		$name=ucwords(trim($this->input->post("name")));
         $hsn=$this->input->post("hsn_code");
-        $CGST=$this->input->post("CGST");	
-        $SGST=$this->input->post("SGST");	
-        $IGST=$this->input->post("IGST");
 		if(!isset($hsn) && empty($hsn)){
 			$hsn=NULL;
 		}		
@@ -42,9 +39,6 @@ class  Product extends CI_Controller {
 			}else{
 				$detail=['name'=>$name,
                             'hsn_code'=>$hsn,		
-                            'CGST'=>$CGST,
-                            'SGST'=>$SGST,	
-                            'IGST'=>$IGST,			
 							'status'=>'1',
 							'created_at'=>date("Y-m-d h:i:s")];
 			$detail=$this->db->insert('product',$detail);
@@ -60,7 +54,7 @@ class  Product extends CI_Controller {
 	function getLists(){
 			$this->General_model->auth_check();
 			$table='product';
-			$order_column_array=array('id_product', 'name','SGST','CGST','IGST','hsn_code','status');
+			$order_column_array=array('id_product', 'name','hsn_code','status');
 			$search_order= array('name','hsn_code');
 			$order_by_array= array('id_product' => 'ASC');
 	        $data = $row = array();
@@ -73,9 +67,6 @@ class  Product extends CI_Controller {
 	            $data[] = 	[$i,	        				
 	    					$m_data->name,
                             $m_data->hsn_code,
-                            $m_data->CGST,
-                            $m_data->SGST,
-                        	$m_data->IGST,
 	    					$status, 
 	    					'<a href="'.base_url('Product/get_editfrm/').$m_data->id_product.'"><button type="button" class="btn btn-custom waves-effect waves-light"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></a>'
 	    					/*'<button type="button" class="btn btn-danger waves-effect waves-light" data-id="delete" data-value="'.$m_data->id_product.'"><i class="fa fa-trash" aria-hidden="true"></i></button>'*/

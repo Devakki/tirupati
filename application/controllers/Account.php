@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class  Party extends CI_Controller {
+class  Account extends CI_Controller {
 	public function __construct() {
         parent::__construct();
         $this->load->helper('url');
@@ -14,14 +14,14 @@ class  Party extends CI_Controller {
 	public function index()
 	{
 		$this->General_model->auth_check();
-		$data['page_title']="Party";
+		$data['page_title']="Account";
 		$data["method"]="add";
 		$data['frm_id']="Add_frm";
 		$data["city"]=$this->General_model->get_data('city','status','*','1');
 		$data["state"]=$this->General_model->get_data('state','status','*','1');
 		$this->load->view('admin/controller/header');
 		$this->load->view('admin/controller/sidebar');
-		$this->load->view('admin/data/party',$data);
+		$this->load->view('admin/data/account',$data);
 		$this->load->view('admin/controller/footer');
 	}
 	
@@ -41,7 +41,7 @@ class  Party extends CI_Controller {
 			if(!isset($mobile) && empty($mobile)){
 				$mobile=NULL;
 			}
-			$count=$this->General_model->has_duplicate($name,'party','name');
+			$count=$this->General_model->has_duplicate($name,'account','name');
 			if($count>0){
 				$data['status']="error";
 				$data['msg']="Party Already Exist" ;	
@@ -55,7 +55,7 @@ class  Party extends CI_Controller {
 					'state_id'=>$state_id,
 					'status'=>'1',
 					'created_at'=>date("Y-m-d h:i:s")];
-				$detail=$this->db->insert('party',$detail);
+				$detail=$this->db->insert('account',$detail);
 				$data['status']="success";
 				$data['msg']="Party Added";	
 
@@ -69,10 +69,10 @@ class  Party extends CI_Controller {
 	}
 	public function getLists(){
 		$this->General_model->auth_check();
-		$table='party';
-		$order_column_array=array('id_party', 'name','mobile','address','city_name','status','created_at');
+		$table='account';
+		$order_column_array=array('id_account', 'name','mobile','address','city_name','status','created_at');
 		$search_order= array( 'name','mobile','address','city_name');
-		$order_by_array= array('id_party' => 'ASC');
+		$order_by_array= array('id_account' => 'ASC');
         $data = $row = array();
         $Master_Data = $this->Genral_datatable->getRows($_POST,$table,$order_column_array,$search_order,$order_by_array);
         $i = $_POST['start'];
@@ -85,7 +85,7 @@ class  Party extends CI_Controller {
     					$m_data->mobile,
     					$m_data->address,
     					$m_data->city_name,
-    					'<a href="'.base_url('party/get_editfrm/').$m_data->id_party.'"><button type="button" class="btn btn-custom waves-effect waves-light"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></a>&nbsp;<button type="button" class="btn btn-danger waves-effect waves-light" data-id="delete" data-value="'.$m_data->id_party.'"><i class="fa fa-trash" aria-hidden="true"></i></button>'];
+    					'<a href="'.base_url('account/get_editfrm/').$m_data->id_account.'"><button type="button" class="btn btn-custom waves-effect waves-light"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></a>&nbsp;<button type="button" class="btn btn-danger waves-effect waves-light" data-id="delete" data-value="'.$m_data->id_account.'"><i class="fa fa-trash" aria-hidden="true"></i></button>'];
         }
         $output = array(
             "draw" => $_POST['draw'],
@@ -100,13 +100,13 @@ class  Party extends CI_Controller {
 		$this->General_model->auth_check();
 		$data['method']="edit";
         $data['frm_id']="Edit_frm";
-        $data['page_title']="Party";
-		$data['result']=$this->General_model->get_row('party','id_party',$id);
+        $data['page_title']="Account";
+		$data['result']=$this->General_model->get_row('account','id_account',$id);
 		$data["city"]=$this->General_model->get_data('city','status','*','1');
 		$data["state"]=$this->General_model->get_data('state','status','*','1');
 		$this->load->view('admin/controller/header');
 		$this->load->view('admin/controller/sidebar');
-		$this->load->view('admin/data/party',$data);
+		$this->load->view('admin/data/account',$data);
 		$this->load->view('admin/controller/footer');
 	}
     public function update()
@@ -127,7 +127,7 @@ class  Party extends CI_Controller {
     		if(!isset($mobile) && empty($mobile)){
     			$mobile=NULL;
     		}
-    		$count=$this->General_model-> has_duplicate_query("select name from party where name ='".$name."' and id_party !='".$id."'");
+    		$count=$this->General_model-> has_duplicate_query("select name from account where name ='".$name."' and id_account !='".$id."'");
     		if($count>0){
     			$data['status']="error";
 				$data['msg']="Party Already Exist" ;
@@ -142,7 +142,7 @@ class  Party extends CI_Controller {
 					'state_id'=>$state_id,					
 					'status'=>$status
 					];
-    		$this->General_model->update('party',$detail,'id_party',$id);
+    		$this->General_model->update('account',$detail,'id_account',$id);
     		$data['status']="success";
     		$data['msg']="Party Updated";
 
@@ -158,7 +158,7 @@ class  Party extends CI_Controller {
     {
     	$this->General_model->auth_check();
     	if(isset($id) && !empty($id)){
-    		$detail=$this->General_model->delete('party','id_party',$id);
+    		$detail=$this->General_model->delete('account','id_account',$id);
     		$data['status']="success";
     		$data['msg']="Party Deleted";
     	}else{

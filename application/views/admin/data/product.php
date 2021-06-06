@@ -23,24 +23,7 @@
                                   <input placeholder="Product Name" type="text" name="name" title="Product Name" required="" data-parsley-required-message="Product Name is Required" class="form-control" autocomplete="off" value="<?php echo (($method=="edit")?$result->name:"");  ?>">
                               </div>
                           </div>
-                          <div class="form-group row">
-                              <label for="CGST" class="col-3 col-form-label">CGST<span class="text-danger">*</span></label>
-                              <div class="col-9">
-                                  <input placeholder="CGST" type="text" name="CGST"  data-parsley-maxlength="8" data-parsley-maxlength-message="Place Enter Valid HSN Code" class="form-control" autocomplete="off" value="<?php echo (($method=="edit")?$result->hsn_code:''); ?>">
-                              </div>
-                          </div>
-                           <div class="form-group row">
-                              <label for="SGST" class="col-3 col-form-label">SGST<span class="text-danger">*</span></label>
-                              <div class="col-9">
-                                  <input placeholder="SGST" type="text" name="SGST"  data-parsley-maxlength="8" data-parsley-maxlength-message="Place Enter Valid HSN Code" class="form-control" autocomplete="off" value="<?php echo (($method=="edit")?$result->hsn_code:''); ?>">
-                              </div>
-                          </div> 
-                           <div class="form-group row">
-                              <label for="IGST" class="col-3 col-form-label">IGST<span class="text-danger">*</span></label>
-                              <div class="col-9">
-                                  <input placeholder="IGST" type="text" name="IGST"  data-parsley-maxlength="8" data-parsley-maxlength-message="Place Enter Valid HSN Code" class="form-control" autocomplete="off" value="<?php echo (($method=="edit")?$result->hsn_code:''); ?>">
-                              </div>
-                          </div> 
+                          
                           <div class="form-group row">
                               <label for="hsn_code" class="col-3 col-form-label">HSN Code<span class="text-danger">*</span></label>
                               <div class="col-9">
@@ -73,11 +56,7 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Item Name</th>
-                            
-                            <th>CGST</th>
-                            <th>SCGST</th>
-                            <th>IGST</th>
+                            <th>Item Name</th> 
                             <th>HSN Code</th>
                             <th>Stutus</th>
                             <th>Action</th>

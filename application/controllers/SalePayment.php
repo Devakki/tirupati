@@ -17,7 +17,7 @@ class SalePayment extends CI_Controller {
         $data['page_title']="Sale Payment";
         $data['method']="add";
         $data['frm_id']="Add_frm";
-        $data['customer']=$this->General_model->get_data('customer','status','*','1');
+        $data['account']=$this->General_model->get_data('account','status','*','1');
         $this->load->view('admin/controller/header');
         $this->load->view('admin/controller/sidebar');
         $this->load->view('admin/data/salepayment',$data);
@@ -28,7 +28,7 @@ class SalePayment extends CI_Controller {
         $columns = array( 
                             0 =>'id', 
                             1 =>'bill_type',
-                            2=> 'customer_name',
+                            2=> 'account_name',
                             3=> 'date',
                             4=> 'rs',
                             5=> 'remark'
@@ -56,7 +56,7 @@ class SalePayment extends CI_Controller {
             {
                 $nestedData['sr_no'] =$i;
                 $nestedData['bill_type'] =(($post->bill_type=="1")?"Credit":"Debit");
-                $nestedData['customer'] =$post->customer_name;
+                $nestedData['account'] =$post->account_name;
                 $nestedData['date'] = date('d/m/Y',strtotime($post->date));
                 $nestedData['rs'] = $post->rs ;
                 $nestedData['remark'] = $post->remark ;
@@ -77,7 +77,7 @@ class SalePayment extends CI_Controller {
     public function create()
     {
         $this->General_model->auth_check();
-        $customer_id=$this->input->post("customer");
+        $account_id=$this->input->post("account");
         $date=$this->input->post("date");
         $date=explode("/", $date);
         $date=[$date[2],$date[1],$date[0]];
@@ -85,14 +85,14 @@ class SalePayment extends CI_Controller {
         $rs=$this->input->post("rs");
         $remark=$this->input->post("remark");
         $bill_type=$this->input->post("bill_type");
-        if(isset($customer_id) && !empty($customer_id) && isset($date) && !empty($date) && isset($rs) && !empty($rs) && isset($bill_type) && !empty($bill_type) ){
-                $customer=$this->General_model->get_row('customer','id_customer',$customer_id);
+        if(isset($account_id) && !empty($account_id) && isset($date) && !empty($date) && isset($rs) && !empty($rs) && isset($bill_type) && !empty($bill_type) ){
+                $account=$this->General_model->get_row('account','id_account',$account_id);
                 if(!isset($remark) && empty($remark)){
                     $remark=NULL;
                 }
                 $data=['bill_type'=>$bill_type,
-                            'customer_id '=>$customer_id,
-                            'customer_name'=>$customer->name,
+                            'account_id '=>$account_id,
+                            'account_name'=>$account->name,
                             'date'=>$date,
                             'sellinvoice_id'=>NULL,
                             'sellpurchase_id'=>NULL,
@@ -115,7 +115,7 @@ class SalePayment extends CI_Controller {
         $data['method']="edit";
         $data['frm_id']="Edit_frm";
         $data['payment']=$this->General_model->get_row('sell_payment','id',$id);
-        $data['customer']=$this->General_model->get_data('customer','status','*','1');
+        $data['account']=$this->General_model->get_data('account','status','*','1');
         $this->load->view('admin/controller/header');
         $this->load->view('admin/controller/sidebar');
         $this->load->view('admin/data/salepayment',$data);
@@ -124,7 +124,7 @@ class SalePayment extends CI_Controller {
     public function update()
     {
         $this->General_model->auth_check();
-        $customer_id=$this->input->post("customer");
+        $account_id=$this->input->post("account");
         $date=$this->input->post("date");
         $date=explode("/", $date);
         $date=[$date[2],$date[1],$date[0]];
@@ -133,14 +133,14 @@ class SalePayment extends CI_Controller {
         $remark=$this->input->post("remark");
         $id_payment=$this->input->post("id_payment");
         $bill_type=$this->input->post("bill_type");
-        if(isset($customer_id) && !empty($customer_id) && isset($date) && !empty($date) && isset($rs) && !empty($rs) && isset($bill_type) && !empty($bill_type) ){
-                $customer=$this->General_model->get_row('customer','id_customer',$customer_id);;
+        if(isset($account_id) && !empty($account_id) && isset($date) && !empty($date) && isset($rs) && !empty($rs) && isset($bill_type) && !empty($bill_type) ){
+                $account=$this->General_model->get_row('account','id_account',$account_id);;
                 if(!isset($remark) && empty($remark)){
                     $remark=NULL;
                 }
                 $data=['bill_type'=>$bill_type,
-                            'customer_id '=>$customer_id,
-                            'customer_name'=>$customer->name,
+                            'account_id '=>$account_id,
+                            'account_name'=>$account->name,
                             'date'=>$date,
                             'rs'=>$rs,
                             'remark'=>$remark ];
@@ -172,14 +172,14 @@ class SalePayment extends CI_Controller {
         $data['page_title']="Ledger";
         $data['method']="view";
         $data['action']=base_url('SalePayment/ledger');
-        $data['customer']=$this->General_model->get_data('customer','status','*','1');
+        $data['account']=$this->General_model->get_data('account','status','*','1');
         $strt_date=$this->input->post("start");
         $end_date=$this->input->post("end");
         $data['display']=false;
-        $customer_id=$this->input->post("customer");
-        if(isset($customer_id) && !empty($customer_id) && isset($strt_date) && !empty($strt_date) && isset($end_date) && !empty($end_date)){
+        $account_id=$this->input->post("account");
+        if(isset($account_id) && !empty($account_id) && isset($strt_date) && !empty($strt_date) && isset($end_date) && !empty($end_date)){
             $data['method']="edit";
-            $data['btn_url']='print_ledger?customer='.$customer_id.'&start='.$strt_date.'&end='.$end_date.'';
+            $data['btn_url']='print_ledger?account='.$account_id.'&start='.$strt_date.'&end='.$end_date.'';
             $strt_date=explode("/", $strt_date);
             $strt_date=[$strt_date[2],$strt_date[1],$strt_date[0]];
             $strt_date=implode("-",$strt_date);
@@ -188,14 +188,14 @@ class SalePayment extends CI_Controller {
             $end_date=implode("-",$end_date);
             $data['strt_date']=date('d/m/Y', strtotime($strt_date));
             $data['end_date']=date('d/m/Y', strtotime($end_date));
-            $data['customer_id']=$customer_id;
+            $data['account_id']=$account_id;
             $data['display']=true;
-            $customer=$this->db->query("SELECT t1.*,t2.name as city_name FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id=t2.id WHERE t1.id_customer='".$customer_id."'")->row(); 
-            $data['acc_name']=ucwords($customer->name).", (".$customer->city_name.")";
-            $data['debit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."' ORDER BY t1.`date` ASC")->result();            
-            $data['credit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."' ORDER BY t1.`date` ASC")->result();
-            $data['c_total']=$this->db->query("SELECT SUM(rs) as c_total FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."'")->row();
-            $data['d_total']=$this->db->query("SELECT SUM(t1.rs) as d_total FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."'")->row();
+            $account=$this->db->query("SELECT t1.*,t2.name as city_name FROM account as t1 LEFT JOIN city as t2 ON t1.city_id=t2.id WHERE t1.id_account='".$account_id."'")->row(); 
+            $data['acc_name']=ucwords($account->name).", (".$account->city_name.")";
+            $data['debit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."' ORDER BY t1.`date` ASC")->result();            
+            $data['credit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."' ORDER BY t1.`date` ASC")->result();
+            $data['c_total']=$this->db->query("SELECT SUM(rs) as c_total FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."'")->row();
+            $data['d_total']=$this->db->query("SELECT SUM(t1.rs) as d_total FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."'")->row();
         }
         $this->load->view('admin/controller/header');
         $this->load->view('admin/controller/sidebar');
@@ -205,11 +205,11 @@ class SalePayment extends CI_Controller {
     public function print_ledger()
     {
         $data['page_title']="Ledger Print";
-        $customer_id=$this->input->get("customer");
+        $account_id=$this->input->get("account");
         $strt_date=$this->input->get("start");
         $end_date=$this->input->get("end");
         $data['display']=false;
-        if(isset($customer_id) && !empty($customer_id)  && isset($strt_date) && !empty($strt_date) && isset($end_date) && !empty($end_date)){
+        if(isset($account_id) && !empty($account_id)  && isset($strt_date) && !empty($strt_date) && isset($end_date) && !empty($end_date)){
             $strt_date=explode("/", $strt_date);
             $strt_date=[$strt_date[2],$strt_date[1],$strt_date[0]];
             $strt_date=implode("-",$strt_date);
@@ -218,14 +218,14 @@ class SalePayment extends CI_Controller {
             $end_date=implode("-",$end_date);
             $data['strt_date']=date('d/m/Y', strtotime($strt_date));
             $data['end_date']=date('d/m/Y', strtotime($end_date));
-            $data['customer_id']=$customer_id;
+            $data['account_id']=$account_id;
             $data['display']=true;
-            $customer=$this->db->query("SELECT t1.*,t2.name as city_name FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id=t2.id WHERE t1.id_customer='".$customer_id."'")->row(); 
-            $data['acc_name']=ucwords($customer->name).", (".$customer->city_name.")";
-            $data['debit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."' ORDER BY t1.`date` ASC")->result();            
-            $data['credit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."' ORDER BY t1.`date` ASC")->result();
-            $data['c_total']=$this->db->query("SELECT SUM(rs) as c_total FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."'")->row();
-            $data['d_total']=$this->db->query("SELECT SUM(t1.rs) as d_total FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.customer_id='".$customer_id."'")->row();
+            $account=$this->db->query("SELECT t1.*,t2.name as city_name FROM account as t1 LEFT JOIN city as t2 ON t1.city_id=t2.id WHERE t1.id_account='".$account_id."'")->row(); 
+            $data['acc_name']=ucwords($account->name).", (".$account->city_name.")";
+            $data['debit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."' ORDER BY t1.`date` ASC")->result();            
+            $data['credit']=$this->db->query("SELECT t1.*,t2.gst_type, t2.invoice_no FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."' ORDER BY t1.`date` ASC")->result();
+            $data['c_total']=$this->db->query("SELECT SUM(rs) as c_total FROM sell_payment as t1 LEFT JOIN sell_purchase as t2 ON t1.sellpurchase_id=t2.id_sellpurchase WHERE t1.bill_type='1' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."'")->row();
+            $data['d_total']=$this->db->query("SELECT SUM(t1.rs) as d_total FROM sell_payment as t1 LEFT JOIN sell_invoice as t2 ON t1.sellinvoice_id=t2.id_sell WHERE t1.bill_type='2' and  t1.date<='".$end_date."' AND t1.date >='".$strt_date."' AND t1.account_id='".$account_id."'")->row();
         }
         $this->load->view('admin/controller/header');
         $this->load->view('admin/controller/sidebar');
@@ -234,26 +234,26 @@ class SalePayment extends CI_Controller {
     }
     public function final_report()
     {
-       $customers=$this->db->query("SELECT t1.customer_id,t2.name FROM sell_payment as t1 LEFT JOIN customer as t2 ON t1.customer_id=t2.id_customer GROUP BY t1.customer_id")->result();
+       $accounts=$this->db->query("SELECT t1.account_id,t2.name FROM sell_payment as t1 LEFT JOIN account as t2 ON t1.account_id=t2.id_account GROUP BY t1.account_id")->result();
        $data['page_title']="Final Report";
        $data['display']=true;
        $i=1;
-       foreach ($customers as  $customers) {
-           $c_total=$this->db->query("SELECT SUM(rs) as c_total FROM `sell_payment` WHERE `bill_type`='1' and `customer_id`='".$customers->customer_id."'")->row();
-           $d_total=$this->db->query("SELECT SUM(rs) as d_total FROM `sell_payment` WHERE `bill_type`='2' and `customer_id`='".$customers->customer_id."'")->row();
+       foreach ($accounts as  $accounts) {
+           $c_total=$this->db->query("SELECT SUM(rs) as c_total FROM `sell_payment` WHERE `bill_type`='1' and `account_id`='".$accounts->account_id."'")->row();
+           $d_total=$this->db->query("SELECT SUM(rs) as d_total FROM `sell_payment` WHERE `bill_type`='2' and `account_id`='".$accounts->account_id."'")->row();
            $ctotal=((isset($c_total->c_total) && !empty($c_total->c_total))?($c_total->c_total):0);
            $dtotal=((isset($d_total->d_total) && !empty($d_total->d_total))?($d_total->d_total):0);
            $rs=(($ctotal >= $dtotal)?($ctotal-$dtotal):($dtotal-$ctotal));
            $rs_closing=(($ctotal >= $dtotal)?"Cr":"DB");
-           $customer_data[]=['sr_no'=>$i,                    
-                        'customer_id'=>$customers->customer_id,
-                        'customer_name'=>$customers->name,
+           $account_data[]=['sr_no'=>$i,                    
+                        'account_id'=>$accounts->account_id,
+                        'account_name'=>$accounts->name,
                         'rs'=>$rs,
                         'rs_closing'=>$rs_closing
                     ];
             $i++;
        }
-       $data['customer_data']=$customer_data;
+       $data['account_data']=$account_data;
        $this->load->view('admin/controller/header');
        $this->load->view('admin/controller/sidebar');
        $this->load->view('admin/sales/ledger/final_ledger',$data);

@@ -6,7 +6,7 @@
                     <h4 class="page-title float-left"><?php echo $page_title; ?></h4>
                     <ol class="breadcrumb float-right">
                         <li class="breadcrumb-item"><a href="<?php echo base_url('Dashbord');?>"><?php echo COMPANY; ?></a></li>
-                        <li class="breadcrumb-item"><a href="<?php echo base_url('party/index');?>"><?php echo $page_title; ?></a></li>
+                        <li class="breadcrumb-item"><a href="<?php echo base_url('account/index');?>"><?php echo $page_title; ?></a></li>
                     </ol>
                     <div class="clearfix"></div>
                 </div>
@@ -15,12 +15,12 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="card-box">
-                  <h4 class="header-title m-t-0 text-center m-b-30"><?php echo (($method=="edit")?"Update":"Add")?> Party</h4>
+                  <h4 class="header-title m-t-0 text-center m-b-30"><?php echo (($method=="edit")?"Update":"Add")?> Account</h4>
                   <form id="<?php echo (($method=="edit")?"$frm_id":"$frm_id");?>" class="form-horizontal" role="form" >
                       <div class="form-group row">
-                          <label for="name" class="col-3 col-form-label">Party Name<span class="text-danger"> *</span></label>
+                          <label for="name" class="col-3 col-form-label">Account Name<span class="text-danger"> *</span></label>
                           <div class="col-9">
-                              <input placeholder="Party Name" type="text" name="name" title="Party Name" required="" data-parsley-required-message="Party Name is Required" class="form-control" autocomplete="off" value="<?php echo (($method=="edit")?$result->name:"");  ?>">
+                              <input placeholder="Account Name" type="text" name="name" title="Account Name" required="" data-parsley-required-message="Account Name is Required" class="form-control" autocomplete="off" value="<?php echo (($method=="edit")?$result->name:"");  ?>">
                           </div>
                       </div>
                       <div class="form-group row row">
@@ -67,7 +67,7 @@
                                   <option value="0" <?php echo (($method=="edit")?(($result->status=="0")?"selected":""):"");  ?>>InActive</option>
                               </select>
                           </div>
-                          <?php echo (($method=="edit")?'<input type="hidden" name="id" value="'.$result->id_party.'">':""); ?>
+                          <?php echo (($method=="edit")?'<input type="hidden" name="id" value="'.$result->id_account.'">':""); ?>
                       </div>
                       <?php } ?>
                       <div class="form-group row m-t-40">
@@ -86,7 +86,7 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Party Name</th>
+                            <th>Account Name</th>
                             <th>Mobile No.</th>
                             <th>Address</th>
                             <th>City</th>
@@ -108,7 +108,7 @@
           order: [],
           dom: 'Blfrtip',
           ajax: {
-                 "url": "<?php echo base_url('Party/getLists/'); ?>",
+                 "url": "<?php echo base_url('Account/getLists/'); ?>",
                  "type": "POST",
              },
           columnDefs: [{ "targets": [0],"orderable": false  }],
@@ -119,7 +119,7 @@
         event.preventDefault();
         var data=$(this).serialize();            
         $.ajax({
-            url: "<?php echo base_url('Party/create')?>",
+            url: "<?php echo base_url('Account/create')?>",
             type: "POST",
             data: data,              
             success: function(result){
@@ -166,7 +166,7 @@
             }).then(function () {
             $.ajax({
               type: "POST",
-              url: "<?php echo base_url('party/delete/');?>"+id+"",
+              url: "<?php echo base_url('account/delete/');?>"+id+"",
               success: function(data){
                 var data  = JSON.parse(data);
                 if(data.status=="success"){

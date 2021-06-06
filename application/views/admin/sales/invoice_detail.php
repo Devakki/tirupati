@@ -23,7 +23,7 @@
                                 <th>#</th>
                                 <th>M/s</th>
                                 <th>Date</th>
-                                <th>Invoice No </th>
+                                <th>Estimate No </th>
                                 <th>Amount</th>
                                 <th></th>                                        
                             </tr>

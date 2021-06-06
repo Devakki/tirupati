@@ -9,7 +9,7 @@ class  SellInvoice extends CI_Controller {
         $this->load->model('General_model');
         $this->load->model('Genral_datatable');
         $this->load->database();
-        $this->General_model->auth_master();
+        $this->General_model->auth_admin();
     }
 	public function index()
 	{
@@ -23,11 +23,10 @@ class  SellInvoice extends CI_Controller {
 	public function get_addfrm()
 	{
 		$this->General_model->auth_check();
-		$data["customer"]=$this->General_model->get_all_where('customer','status','1');
+		$data["account"]=$this->General_model->get_all_where('account','status','1');
 		$data["product"]=$this->General_model->get_all_where('product','status','1');
 		$data["method"]="add";
 		$data['page_title']="Sale Invoice";
-		$data["settings"]=$this->General_model->get_data('settings','s_index','*','1');
 		$data['invoice']=$this->db->query("SELECT invoice_no FROM sell_invoice where cur_year=2021 ORDER BY invoice_no  DESC LIMIT 1")->row();
 		$data["transpoter"]=$this->General_model->get_data('transpoter','status','*','1'); 
 		$data['action']=base_url('SellInvoice/create');
@@ -48,20 +47,18 @@ class  SellInvoice extends CI_Controller {
 	{
 		$this->General_model->auth_check();
 		$bill_type=$this->input->post("bill_type");
-		$gst_type=$this->input->post("gst_type");
 		$invoice_no=$this->input->post("invoice_no");
-		$customer=$this->input->post("customer_id");
+		$account=$this->input->post("account_id");
 		$transpoter_id=$this->input->post("transpoter_id");
 		$date=$this->input->post("date");
 		$date=explode("/", $date);
 		$date=[$date[2],$date[1],$date[0]];
 		$date=implode("-", $date);
 		$s_total=$this->input->post("sub_total");
-		$all_gst=$this->input->post("all_gst");
 		$g_total=$this->input->post("grand_total");		
-		if(isset($bill_type) && !empty($bill_type) &&  isset($invoice_no) && !empty($invoice_no) && isset($customer) && !empty($customer) &&  isset($date) && !empty($date) && isset($s_total) && !empty($s_total) &&  isset($g_total) && !empty($g_total) ) {		
+		if(isset($bill_type) && !empty($bill_type) &&  isset($invoice_no) && !empty($invoice_no) && isset($account) && !empty($account) &&  isset($date) && !empty($date) && isset($s_total) && !empty($s_total) &&  isset($g_total) && !empty($g_total) ) {		
 			$i=0;
-			$query=$this->db->query("SELECT t1.*,t2.name as city_name ,t3.name as state_name,t3.country FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id = t2.id LEFT JOIN state as t3 ON t1.state_id = t3.id WHERE t1.`id_customer`='".$customer."'")->row();
+			$query=$this->db->query("SELECT t1.*,t2.name as city_name ,t3.name as state_name,t3.country FROM account as t1 LEFT JOIN city as t2 ON t1.city_id = t2.id LEFT JOIN state as t3 ON t1.state_id = t3.id WHERE t1.`id_account`='".$account."'")->row();
 			if(isset($transpoter_id) && !empty($transpoter_id) && $transpoter_id !=0){
 				$transpoter=$this->General_model->get_row('transpoter','id',$transpoter_id);
 				$transpoter_id=$transpoter_id;
@@ -71,8 +68,7 @@ class  SellInvoice extends CI_Controller {
 				$transpoter_name=NULL;
 			}
 			$sell_invoice=['bill_type'=>$bill_type,
-							'gst_type'=>$gst_type,
-							'customer_id'=>$customer,
+							'account_id'=>$account,
 							'invoice_no'=>$invoice_no,
 							'transpoter_id'=>$transpoter_id,
 							'transpoter_name'=>$transpoter_name,
@@ -84,7 +80,6 @@ class  SellInvoice extends CI_Controller {
 							'date'=>$date,
 							'mobile'=>$query->mobile,							
 							'subtotal'=>$s_total,
-							'all_gst'=>$all_gst,
                             'cur_year'=>2021,
 							'grandtotal'=>$g_total,
 							'status'=>'1',
@@ -97,45 +92,19 @@ class  SellInvoice extends CI_Controller {
 				$quality=$this->input->post("quality")[$i];
 				$price=$this->input->post("item_price")[$i];
 				$total=$this->input->post("total")[$i];
-				$fine=$this->input->post("fine")[$i];
-				if($gst_type=="1"):		
-					$cgst=$this->input->post("cgst")[$i];
-					$sgst=$this->input->post("sgst")[$i];
-				else:
-					$igst=$this->input->post("igst")[$i];
-				endif;
 				$amount=$this->input->post("amount")[$i];
 				if(!empty($product_id) && !empty($quality) && !empty($price)&& !empty($total)&& !empty($amount) && !empty($lastid)) {
-					$setting=$this->General_model->get_data('settings','s_index','*','1');
-					if($gst_type=="1"):	
+					
 						$sell_product=['sellinvoice_id'=>$lastid,
 											'product_id'=>$product_id,
 											'quality'=>$quality,
 											'price'=>$price,
 											'date'=>$date,
-											'sfine'=>$fine,
 											'total'=>$total,
-											'sgst_p'=>$setting[0]->s_value,
-											'cgst_p'=>$setting[1]->s_value,
-											'cgst'=>$cgst,
-											'sgst'=>$sgst,
 											'amount'=>$amount,
 											'status'=>1,					
 											'created_at'=>date("Y-m-d h:i:s")];
-					else:
-						$sell_product=['sellinvoice_id'=>$lastid,
-											'product_id'=>$product_id,
-											'quality'=>$quality,
-											'date'=>$date,
-											'sfine'=>$fine,
-											'price'=>$price,
-											'total'=>$total,
-											'igst_p'=>$setting[2]->s_value,
-											'igst'=>$igst,
-											'amount'=>$amount,
-											'status'=>1,					
-											'created_at'=>date("Y-m-d h:i:s")];
-					endif;				
+				
 						$this->db->insert('sell_product',$sell_product);		
 					} 		
 					$i++;
@@ -144,8 +113,8 @@ class  SellInvoice extends CI_Controller {
 									'date'=>$date,
 									'rs'=>$g_total,
 									'sellinvoice_id'=>$lastid,
-									'customer_id'=>$customer,
-									'customer_name'=>$query->name,
+									'account_id'=>$account,
+									'account_name'=>$query->name,
 									'sellpurchase_id'=>NULL,
 									'remark'=>NULL,
 									'status'=>'0',
@@ -190,7 +159,7 @@ class  SellInvoice extends CI_Controller {
 		$this->General_model->auth_check();
 		$data['method']="edit"; 
 		$data['page_title']="Sale Invoice"; 
-		$data["customer"]=$this->General_model->get_all_where('customer','status','1');
+		$data["account"]=$this->General_model->get_all_where('account','status','1');
 		$data["product"]=$this->General_model->get_all_where('product','status','1');	    	    	
 		$data['sell_invoice']=$this->General_model->get_row('sell_invoice','id_sell',$id);
 		$data["settings"]=$this->General_model->get_data('settings','s_index','*','1');
@@ -216,7 +185,7 @@ class  SellInvoice extends CI_Controller {
 		$gst_type=$this->input->post("gst_type");
 		$transpoter_id=$this->input->post("transpoter_id");	
 		$invoice_no=$this->input->post("invoice_no");
-		$customer=$this->input->post("customer_id");	
+		$account=$this->input->post("account_id");	
 		$date=$this->input->post("date");
 		$date=explode("/", $date);
 		$date=[$date[2],$date[1],$date[0]];
@@ -227,9 +196,9 @@ class  SellInvoice extends CI_Controller {
 		$all_gst=$this->input->post("all_gst");
 		$g_total=$this->input->post("grand_total");
 		$id_sell=$this->input->post("id_sell");	
-		if(isset($bill_type) && !empty($bill_type) &&  isset($invoice_no) && !empty($invoice_no) && isset($customer) && !empty($customer) &&  isset($date) && !empty($date) && isset($s_total) && !empty($s_total) &&  isset($g_total) && !empty($g_total) &&  isset($id_sell) && !empty($id_sell) && isset($pand_fine) && !empty($pand_fine) &&  isset($touch) && !empty($touch)) {		
+		if(isset($bill_type) && !empty($bill_type) &&  isset($invoice_no) && !empty($invoice_no) && isset($account) && !empty($account) &&  isset($date) && !empty($date) && isset($s_total) && !empty($s_total) &&  isset($g_total) && !empty($g_total) &&  isset($id_sell) && !empty($id_sell) && isset($pand_fine) && !empty($pand_fine) &&  isset($touch) && !empty($touch)) {		
 	    			$i=0;
-	    			$query=$this->db->query("SELECT t1.*,t2.name as city_name ,t3.name as state_name,t3.country FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id = t2.id LEFT JOIN state as t3 ON t1.state_id = t3.id WHERE t1.`id_customer`='".$customer."'")->row();
+	    			$query=$this->db->query("SELECT t1.*,t2.name as city_name ,t3.name as state_name,t3.country FROM account as t1 LEFT JOIN city as t2 ON t1.city_id = t2.id LEFT JOIN state as t3 ON t1.state_id = t3.id WHERE t1.`id_account`='".$account."'")->row();
 	    			if(isset($transpoter_id) && !empty($transpoter_id)){
 	    				$transpoter=$this->General_model->get_row('transpoter','id',$transpoter_id);
 	    				$transpoter_id=$transpoter_id;
@@ -240,7 +209,7 @@ class  SellInvoice extends CI_Controller {
 	    			}			
 	    			$sell_invoice=['bill_type'=>$bill_type,
 							'gst_type'=>$gst_type,
-							'customer_id'=>$customer,
+							'account_id'=>$account,
 							'pand_find'=>$pand_fine,
 							'touch'=>$touch,
 							'transpoter_id'=>$transpoter_id,
@@ -338,8 +307,8 @@ class  SellInvoice extends CI_Controller {
 					$sell_payment = ['bill_type'=>'2',
 										'date'=>$date,
 										'rs'=>$g_total,
-										'customer_id'=>$customer,
-										'customer_name'=>$query->name,
+										'account_id'=>$account,
+										'account_name'=>$query->name,
 										'status'=>'0'
 										];
 					$this->General_model->update('sell_payment',$sell_payment,'sellinvoice_id',$id_sell);
@@ -373,7 +342,7 @@ class  SellInvoice extends CI_Controller {
 	    	setlocale(LC_MONETARY, 'en_IN');
 	    	$sell_invoice=$this->General_model->get_row('sell_invoice','id_sell',$id);
 	    	$sell_product=$this->db->query("SELECT t1.*,t2.name as product_name,t2.hsn_code  FROM sell_product as t1 LEFT JOIN product as t2 ON t1.product_id = t2.id_product WHERE t1.sellinvoice_id='".$id."'")->result(); 
-	    	$customer=$this->db->query("SELECT t1.*,t2.name as city_name,t2.code as city_code,t3.name as state_name,t3.code as state_code,t3.country FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id= t2.id LEFT JOIN state as t3 ON t1.state_id= t3.id WHERE t1.id_customer='".$sell_invoice->customer_id."'")->row();
+	    	$account=$this->db->query("SELECT t1.*,t2.name as city_name,t2.code as city_code,t3.name as state_name,t3.code as state_code,t3.country FROM account as t1 LEFT JOIN city as t2 ON t1.city_id= t2.id LEFT JOIN state as t3 ON t1.state_id= t3.id WHERE t1.id_account='".$sell_invoice->account_id."'")->row();
 	    	$pdf->SetFont('Arial','B',12);
 	    	$image=base_url('assets/admin/images/adwait.png');
 			$pdf->Image($image,5,5,200,0,'PNG');
@@ -383,8 +352,8 @@ class  SellInvoice extends CI_Controller {
 			$pdf->Cell(20,5,"Original",0,1,'L');
 			$pdf->SetFont('Arial','',10);
 			$pdf->SetXY(23,62);
-			$city_code=((isset($customer->city_code) && !empty($customer->city_code))?" - ".$customer->city_code:"");
-			$pdf->MultiCell(95,5, strtoupper($customer->name)."\n". strtoupper($customer->address).", ".strtoupper($customer->city_name).$city_code."\n"."Mo :  ".$customer->mobile,0,'L');
+			$city_code=((isset($account->city_code) && !empty($account->city_code))?" - ".$account->city_code:"");
+			$pdf->MultiCell(95,5, strtoupper($account->name)."\n". strtoupper($account->address).", ".strtoupper($account->city_name).$city_code."\n"."Mo :  ".$account->mobile,0,'L');
 			/*invoice No*/
 			$pdf->SetXY(157,60.1);
 			$pdf->Cell(20,5,$sell_invoice->invoice_no,0,1,'L');
@@ -403,12 +372,12 @@ class  SellInvoice extends CI_Controller {
 			$pdf->SetXY(157,87);
 			$pdf->Cell(43,6,$lr_no,0,1,'L');
 			$pdf->SetXY(40,85);
-			$pdf->Cell(70,5,$customer->gst_no,0,1,'L');
-			$state_code=((isset($customer->state_code) && !empty($customer->state_code))?" - ".$customer->state_code:"");
+			$pdf->Cell(70,5,$account->gst_no,0,1,'L');
+			$state_code=((isset($account->state_code) && !empty($account->state_code))?" - ".$account->state_code:"");
 			$pdf->SetXY(40,90);
-			$pdf->Cell(70,5,strtoupper($customer->state_name.$state_code),0,1,'L');
+			$pdf->Cell(70,5,strtoupper($account->state_name.$state_code),0,1,'L');
 			$pdf->SetXY(40,90);
-			$pdf->Cell(70,5,strtoupper($customer->state_name.$state_code),0,1,'L');
+			$pdf->Cell(70,5,strtoupper($account->state_name.$state_code),0,1,'L');
 			$pdf->SetFont('Arial','B',10);
 			$pdf->SetXY(39,207);
 			$pdf->Cell(70,5,strtoupper(GST_NO),0,1,'L');
@@ -486,7 +455,7 @@ class  SellInvoice extends CI_Controller {
 	    	setlocale(LC_MONETARY, 'en_IN');
 	    	$sell_invoice=$this->General_model->get_row('sell_invoice','id_sell',$id);
 	    	$sell_product=$this->db->query("SELECT t1.*,t2.name as product_name,t2.hsn_code  FROM sell_product as t1 LEFT JOIN product as t2 ON t1.product_id = t2.id_product WHERE t1.sellinvoice_id='".$id."'")->result(); 
-	    	$customer=$this->db->query("SELECT t1.*,t2.name as city_name,t2.code as city_code,t3.name as state_name,t3.code as state_code,t3.country FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id= t2.id LEFT JOIN state as t3 ON t1.state_id= t3.id WHERE t1.id_customer='".$sell_invoice->customer_id."'")->row();
+	    	$account=$this->db->query("SELECT t1.*,t2.name as city_name,t2.code as city_code,t3.name as state_name,t3.code as state_code,t3.country FROM account as t1 LEFT JOIN city as t2 ON t1.city_id= t2.id LEFT JOIN state as t3 ON t1.state_id= t3.id WHERE t1.id_account='".$sell_invoice->account_id."'")->row();
 	    	$pdf->SetFont('Arial','B',12);
 	    	$image=base_url('assets/admin/images/adwait.png');
 			$pdf->Image($image,5,5,200,0,'PNG');
@@ -496,8 +465,8 @@ class  SellInvoice extends CI_Controller {
 			$pdf->Cell(20,5,"Duplicate",0,1,'L');
 			$pdf->SetFont('Arial','',10);
 			$pdf->SetXY(23,62);
-			$city_code=((isset($customer->city_code) && !empty($customer->city_code))?" - ".$customer->city_code:"");
-			$pdf->MultiCell(95,5, strtoupper($customer->name)."\n". strtoupper($customer->address).", ".strtoupper($customer->city_name).$city_code."\n"."Mo :  ".$customer->mobile,0,'L');
+			$city_code=((isset($account->city_code) && !empty($account->city_code))?" - ".$account->city_code:"");
+			$pdf->MultiCell(95,5, strtoupper($account->name)."\n". strtoupper($account->address).", ".strtoupper($account->city_name).$city_code."\n"."Mo :  ".$account->mobile,0,'L');
 			/*invoice No*/
 			$pdf->SetXY(157,60.1);
 			$pdf->Cell(20,5,$sell_invoice->invoice_no,0,1,'L');
@@ -516,12 +485,12 @@ class  SellInvoice extends CI_Controller {
 			$pdf->SetXY(157,87);
 			$pdf->Cell(43,6,$lr_no,0,1,'L');
 			$pdf->SetXY(40,85);
-			$pdf->Cell(70,5,$customer->gst_no,0,1,'L');
-			$state_code=((isset($customer->state_code) && !empty($customer->state_code))?" - ".$customer->state_code:"");
+			$pdf->Cell(70,5,$account->gst_no,0,1,'L');
+			$state_code=((isset($account->state_code) && !empty($account->state_code))?" - ".$account->state_code:"");
 			$pdf->SetXY(40,90);
-			$pdf->Cell(70,5,strtoupper($customer->state_name.$state_code),0,1,'L');
+			$pdf->Cell(70,5,strtoupper($account->state_name.$state_code),0,1,'L');
 			$pdf->SetXY(40,90);
-			$pdf->Cell(70,5,strtoupper($customer->state_name.$state_code),0,1,'L');
+			$pdf->Cell(70,5,strtoupper($account->state_name.$state_code),0,1,'L');
 			$pdf->SetFont('Arial','B',10);
 			$pdf->SetXY(39,207);
 			$pdf->Cell(70,5,strtoupper(GST_NO),0,1,'L');
@@ -599,7 +568,7 @@ class  SellInvoice extends CI_Controller {
 	    	setlocale(LC_MONETARY, 'en_IN');
 	    	$sell_invoice=$this->General_model->get_row('sell_invoice','id_sell',$id);
 	    	$sell_product=$this->db->query("SELECT t1.*,t2.name as product_name,t2.hsn_code  FROM sell_product as t1 LEFT JOIN product as t2 ON t1.product_id = t2.id_product WHERE t1.sellinvoice_id='".$id."'")->result(); 
-	    	$customer=$this->db->query("SELECT t1.*,t2.name as city_name,t2.code as city_code,t3.name as state_name,t3.code as state_code,t3.country FROM customer as t1 LEFT JOIN city as t2 ON t1.city_id= t2.id LEFT JOIN state as t3 ON t1.state_id= t3.id WHERE t1.id_customer='".$sell_invoice->customer_id."'")->row();
+	    	$account=$this->db->query("SELECT t1.*,t2.name as city_name,t2.code as city_code,t3.name as state_name,t3.code as state_code,t3.country FROM account as t1 LEFT JOIN city as t2 ON t1.city_id= t2.id LEFT JOIN state as t3 ON t1.state_id= t3.id WHERE t1.id_account='".$sell_invoice->account_id."'")->row();
 	    	$pdf->SetFont('Arial','B',12);
 	    	$image=base_url('assets/admin/images/adwait.png');
 			$pdf->Image($image,5,5,200,0,'PNG');
@@ -609,8 +578,8 @@ class  SellInvoice extends CI_Controller {
 			$pdf->Cell(20,5,"Triplicate",0,1,'L');
 			$pdf->SetFont('Arial','',10);
 			$pdf->SetXY(23,62);
-			$city_code=((isset($customer->city_code) && !empty($customer->city_code))?" - ".$customer->city_code:"");
-			$pdf->MultiCell(95,5, strtoupper($customer->name)."\n". strtoupper($customer->address).", ".strtoupper($customer->city_name).$city_code."\n"."Mo :  ".$customer->mobile,0,'L');
+			$city_code=((isset($account->city_code) && !empty($account->city_code))?" - ".$account->city_code:"");
+			$pdf->MultiCell(95,5, strtoupper($account->name)."\n". strtoupper($account->address).", ".strtoupper($account->city_name).$city_code."\n"."Mo :  ".$account->mobile,0,'L');
 			/*invoice No*/
 			$pdf->SetXY(157,60.1);
 			$pdf->Cell(20,5,$sell_invoice->invoice_no,0,1,'L');
@@ -629,12 +598,12 @@ class  SellInvoice extends CI_Controller {
 			$pdf->SetXY(157,87);
 			$pdf->Cell(43,6,$lr_no,0,1,'L');
 			$pdf->SetXY(40,85);
-			$pdf->Cell(70,5,$customer->gst_no,0,1,'L');
-			$state_code=((isset($customer->state_code) && !empty($customer->state_code))?" - ".$customer->state_code:"");
+			$pdf->Cell(70,5,$account->gst_no,0,1,'L');
+			$state_code=((isset($account->state_code) && !empty($account->state_code))?" - ".$account->state_code:"");
 			$pdf->SetXY(40,90);
-			$pdf->Cell(70,5,strtoupper($customer->state_name.$state_code),0,1,'L');
+			$pdf->Cell(70,5,strtoupper($account->state_name.$state_code),0,1,'L');
 			$pdf->SetXY(40,90);
-			$pdf->Cell(70,5,strtoupper($customer->state_name.$state_code),0,1,'L');
+			$pdf->Cell(70,5,strtoupper($account->state_name.$state_code),0,1,'L');
 			$pdf->SetFont('Arial','B',10);
 			$pdf->SetXY(39,207);
 			$pdf->Cell(70,5,strtoupper(GST_NO),0,1,'L');

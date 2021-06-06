@@ -28,29 +28,17 @@
                                           </label>                                   
                                       </div>
                               </div>
+                              
                               <div class="form-group row">
-                                   <label for="gst" class="col-3 col-form-label">Gst Type</label>
-                                    <div class="col-9">
-                                        <select name="gst_type" id="gst_type" required>
-                                          <?php if($method=="add"): ?>
-                                          <option value="1">(S+C)GST</option>
-                                          <option value="2">IGST</option>
-                                          <?php else: ?>
-                                          <option value="<?php echo $sell_invoice->gst_type; ?>"><?php echo (($sell_invoice->gst_type=="1")?"(S+C)GST":"IGST"); ?></option>
-                                          <?php endif; ?>
-                                        </select>
-                                    </div>
-                              </div>
-                              <div class="form-group row">
-                                  <label for="customer_id" class="col-3 col-form-label">Customer</label>
+                                  <label for="account_id" class="col-3 col-form-label">Account</label>
                                       <div class="col-9">
-                                          <select data-live-search="true" name="customer_id" id="customer_id" data-parsley-required-message="You Must Select 1 Customer" required>
+                                          <select data-live-search="true" name="account_id" id="account_id" data-parsley-required-message="You Must Select 1 Customer" required>
                                             <option value="0">None</option>
                                             <?php
-                                            foreach ($customer as  $customer) {
-                                              echo '<option value="'.$customer->id_customer .'"'.
-                                              (($method=="edit")?(($customer->id_customer==$sell_invoice->customer_id)?"selected":""):"")
-                                              .' >'.$customer->name.'</option>';
+                                            foreach ($account as  $account) {
+                                              echo '<option value="'.$account->id_account .'"'.
+                                              (($method=="edit")?(($account->id_account==$sell_invoice->account_id)?"selected":""):"")
+                                              .' >'.$account->name.'</option>';
                                             }
                                             ?>
                                           </select>
@@ -60,7 +48,7 @@
                           </div>
                           <div class="col-md-6">
                               <div class="form-group row">
-                                 <label for="invoice_no" class="col-3 col-form-label">Invoice No</label>
+                                 <label for="invoice_no" class="col-3 col-form-label">Estimate No</label>
                                      <div class="col-9">
                                         <input type="text" class="form-control"  title="Invoice No" name="invoice_no" placeholder="Invoice No." value="<?php echo (($method=="edit")?"$sell_invoice->invoice_no":$invoice['no_invoice'] )?>" required >
                                      </div>
@@ -101,8 +89,7 @@
                                                 <th>Quantity</th>
                                                 <th>Price</th>
                                                 <th>Sub Total</th>
-                                                <th class="trtext text-center">GST</th>
-                                                <th>G Total</th>
+                                                 <th>G Total</th>
                                                 <th></th>                            
                                             </tr>
                                         </thead>
@@ -111,7 +98,7 @@
                                             if($method=="edit"):
                                             $i=1; 
                                             foreach ($sell_product as $sell_product):
-                                            $products=$this->General_model->get_all_where('product','status','1');
+                                            $products=$this->General_model->get_all_where('item','status','1');
                                           ?>
                                           <tr>
                                             <td width="20%">
@@ -126,7 +113,6 @@
                                             <td>
                                                 <input type="number" step="any" class="form-control sQuality" name="quality[]" required  placeholder="Quantity" value="<?php echo $sell_product->quality; ?>" />
                                                 <input type="hidden" name="sellproduct[]" required value="<?php echo $sell_product->id_sellproduct; ?>" />
-                                                <input type="hidden" step="any" class="sFine" name="fine[]" value="<?php echo $sell_product->sfine; ?>" required  />
                                             </td>
                                             <td>
                                                 <input type="number" step="any" class="form-control sPrice" name="item_price[]" placeholder="Price" required value="<?php echo $sell_product->price; ?>" />
@@ -134,13 +120,7 @@
                                             <td>
                                                 <input type="number" step="any" class="form-control stotal"  name="total[]" placeholder="Total" readonly value="<?php echo $sell_product->total; ?>" />
                                             </td>
-                                            <td class="row trgst" >
-                                              <?php if($sell_invoice->gst_type=="1"): ?>
-                                              <input type="number" name="cgst[]" class="form-control sSgst w-50" step="any" placeholder="SGST" readonly value="<?php echo $sell_product->sgst; ?>" /><input type="number" name="sgst[]" class="form-control sCgst w-50"  step="any"  placeholder="CGST" readonly value="<?php echo $sell_product->cgst; ?>" />
-                                              <?php else: ?>
-                                              <input type="number" name="igst[]" class="form-control sIgst "  step="any"  placeholder="IGST" readonly value="<?php echo $sell_product->igst; ?>" />
-                                              <?php endif; ?>
-                                            </td>
+                                           
                                             <td>
                                             <input type="number" step="any" class="form-control sAmount"  name="amount[]" placeholder="Amount" required value="<?php echo $sell_product->amount; ?>">
                                             </td>
@@ -167,7 +147,6 @@
                                               </td>
                                               <td>
                                                   <input type="number" step="any" class="form-control sQuality" name="quality[]" required  placeholder="Quantity" />
-                                                  <input type="hidden" step="any" class="form-control sFine" name="fine[]" required />
                                               </td>
                                               <td>
                                                   <input type="number" step="any" class="form-control sPrice" name="item_price[]" placeholder="Price" value="" required />
@@ -175,9 +154,7 @@
                                               <td>
                                                   <input type="number" step="any" class="form-control stotal"  name="total[]" placeholder="Total" readonly  />
                                               </td>
-                                              <td class="row trgst" >
-                                                <input type="number" name="cgst[]" class="form-control sSgst w-50" step="any" placeholder="SGST" readonly /><input type="number" name="sgst[]" class="form-control sCgst w-50"  step="any"  placeholder="CGST" readonly />
-                                              </td>
+                                             
                                               <td>
                                               <input type="number" step="any" class="form-control sAmount"  name="amount[]" placeholder="Amount" required >
                                               </td>
@@ -201,11 +178,28 @@
                                    </div>
                             </div>                            
                           </div>
+                         
                           <div class="col-md-6 offset-md-6">
                             <div class="form-group row">
-                               <label for="" class="col-3 col-form-label">GST</label>
+                               <label for="" class="col-3 col-form-label">Advance</label>
                                    <div class="col-9">
-                                      <input type="text" class="form-control Gst" name="all_gst" readonly>
+                                      <input type="text" class="form-control Advance" name="advance" >
+                                   </div>
+                            </div>                            
+                          </div>
+                         <div class="col-md-6 offset-md-6">
+                            <div class="form-group row">
+                               <label for="" class="col-3 col-form-label">Baki</label>
+                                   <div class="col-9">
+                                      <input type="text" class="form-control Baki" name="baki" readonly>
+                                   </div>
+                            </div>                            
+                          </div>
+                         <div class="col-md-6 offset-md-6">
+                            <div class="form-group row">
+                               <label for="" class="col-3 col-form-label">Discount</label>
+                                   <div class="col-9">
+                                      <input type="text" class="form-control Discount" name="discount" >
                                    </div>
                             </div>                            
                           </div>
@@ -228,9 +222,7 @@
     </div> <!-- container -->
 </div> <!-- content -->
 <script type="text/javascript">
-  <?php foreach ($settings as $settings) {
-      echo "var ".$settings->s_key."_percentage=".$settings->s_value.";";
-    } 
+  <?php
     echo (($method=="edit")?"var method='edit';":"var method='add';");
     ?>    
 </script>
